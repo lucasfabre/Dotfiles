@@ -26,6 +26,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " Plugin 'ascenator/L9', {'name': 'newL9'}
 
 " Perso plugins
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'NLKNguyen/c-syntax.vim'
 Plugin 'pangloss/vim-javascript'
@@ -33,6 +34,8 @@ Plugin 'elzr/vim-json'
 Plugin 'fatih/vim-go'
 Plugin 'raichoo/haskell-vim'
 Plugin 'hdima/python-syntax'
+Plugin 'sirver/UltiSnips'
+Plugin 'tpope/vim-surround'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -68,8 +71,23 @@ set number relativenumber
 set notimeout ttimeout ttimeoutlen=200
 set pastetoggle=<F11>
 
+" Snipets
+" Trigger configuration. Do not use <tab> if you use
+" https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-l>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories = ['~/.vim/UltiSnips', 'UltiSnips']
+
+" YouAutoCompleteMe
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
 set background=dark
 colorscheme PaperColor
 hi Normal guibg=NONE ctermbg=NONE
 hi NonText guibg=NONE ctermbg=NONE
-hi LineNr guibg=NONE ctermbg=NONE
+hi CursorLineNR cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+hi LineNR cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
