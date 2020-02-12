@@ -77,8 +77,6 @@ let g:ale_lint_on_text_changed = 1
 let g:ale_lint_on_insert_leave = 1
 
 " Snipets
-" Trigger configuration. Do not use <tab> if you use
-" https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger       = "<c-l>"
 let g:UltiSnipsJumpForwardTrigger  = "<c-b>"
 let g:UltiSnipsJumpBackwardTrigger = "<c-z>"
