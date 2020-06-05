@@ -3,7 +3,7 @@ set nocompatible
 " Plugins
 call plug#begin('~/.vim/plugged')
 
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'arzg/vim-colors-xcode'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'tpope/vim-fugitive'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -35,6 +35,9 @@ set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 set expandtab
+
+" Nerdtree toggle on C-f
+map <C-f> :NERDTreeToggle<Cr>
 
 " nvim exit terminal with esc
 tnoremap <Esc> <C-\><C-n>
@@ -132,9 +135,9 @@ set number relativenumber
 set notimeout ttimeout ttimeoutlen=200
 set pastetoggle=<F11>
 
-set background=dark
-colorscheme PaperColor
+colorscheme xcodedark
 hi Normal guibg=NONE ctermbg=NONE
 hi NonText guibg=NONE ctermbg=NONE
+hi EndOfBuffer guibg=NONE ctermbg=NONE
 hi CursorLineNR cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
 hi LineNR cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
