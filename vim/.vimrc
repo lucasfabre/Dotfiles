@@ -13,13 +13,12 @@ Plug 'preservim/nerdtree'
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'severin-lemaignan/vim-minimap'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'mattn/emmet-vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'jiangmiao/auto-pairs'
+Plug 'preservim/nerdcommenter'
 Plug 'luochen1990/rainbow'
-Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
 
@@ -65,19 +64,11 @@ let g:rainbow_active = 1
 nnoremap <C-p> :Files<Cr>
 nnoremap <C-e> :Buffers<Cr>
 " show preview
+let $FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
+"command! -bang -nargs=? Files call fzf#vim#grep('rg --files --hidden --ignore-case --glob "!.git/*" --no-heading'.shellescape(<q-args>), 1,fzf#vim#with_preview('right'), <bang>0)
 command! -bang -nargs=? -complete=dir Files call fzf#vim#files(<q-args>, fzf#vim#with_preview('right'))
 " Esc escape fzf
 tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
-
-" ALE: Code Fromating configuration
-let g:ale_fixers = {}
-let g:ale_fixers.javascript = ['prettier']
-let g:ale_fixers.json = ['prettier']
-let g:ale_fixers['*'] = ['remove_trailing_lines', 'trim_whitespace']
-let g:ale_sign_error = '😠'
-let g:ale_sign_warning = '⚠'
-let g:ale_lint_on_text_changed = 1
-let g:ale_lint_on_insert_leave = 1
 
 " Snipets
 let g:UltiSnipsExpandTrigger       = "<c-l>"
@@ -109,13 +100,13 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-nmap <leader>rn <Plug>(coc-rename)
+nmap <leader> rn <Plug>(coc-rename)
 
 " Disable Ex mode
 map Q <Nop>
 
 " Common vim parameters
-let mapleader = ","
+let mapleader = "\<Space>"
 syntax on
 set hidden
 set nowrap
