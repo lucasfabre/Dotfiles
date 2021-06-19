@@ -1,1 +1,0 @@
-/home/lucas.fabre/.local/share/omf/themes/spacefish/fish_prompt.fish
