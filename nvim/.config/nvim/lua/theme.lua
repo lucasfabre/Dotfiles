@@ -7,6 +7,8 @@ return {
       style = 'deep',
       transparent = true,
       highlights = {
+        LspInlayHint = {fg = '$grey', fmt = 'italic'},
+        Comment = {fg = '$light_grey' },
       },
     }
     vim.cmd([[colorscheme onedark]])

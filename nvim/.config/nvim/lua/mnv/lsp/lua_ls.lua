@@ -1,6 +1,7 @@
 return {
   setup = function(opts)
     require('lspconfig').lua_ls.setup {
+      capabilities = opts.capabilities,
       single_file_support = true,
       on_attach = opts.on_attach,
       flags = opts.lsp_flags,
