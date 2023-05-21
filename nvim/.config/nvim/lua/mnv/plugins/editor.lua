@@ -7,10 +7,28 @@ return {
     },
     opts = {}
   },
-  { "m4xshen/autoclose.nvim",                lazy = false, priority = 1000, opts = {} },
-  { "editorconfig/editorconfig-vim",         lazy = false, priority = 1000, },
-  { "mattn/emmet-vim",                       lazy = false, priority = 1000, },
+  { "windwp/nvim-autopairs", lazy = false, priority = 1000, opts = {} },
+  { "editorconfig/editorconfig-vim", lazy = false, priority = 1000, },
+  { "mattn/emmet-vim", lazy = false, priority = 1000, },
   { "kylechui/nvim-surround", version = "*", lazy = false, priority = 1000, opts = {} },
+  {
+    "zbirenbaum/copilot.lua",
+    lazy = false,
+    config = function()
+      require("copilot").setup({
+        panel = {
+          layout = {
+            position = "right",
+            ratio = 0.4
+          },
+        },
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+        }
+      })
+    end,
+  },
   {
     "kyazdani42/nvim-tree.lua",
     dependencies = {
@@ -20,15 +38,9 @@ return {
       "NvimTreeToggle"
     },
     opts = {
-      open_on_setup = false,
       sort_by = "case_sensitive",
       view = {
         adaptive_size = true,
-        mappings = {
-          list = {
-            { key = "u", action = "dir_up" },
-          },
-        },
       },
       renderer = {
         group_empty = true,

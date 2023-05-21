@@ -9,15 +9,7 @@ local setup = function()
           -- Keep original functionality
           require('mason-nvim-dap').default_setup(config)
         end,
-        rust = function(config)
-            config.adapters = {
-	            type = "executable",
-	            command = "lldb-vscode",
-              name = "lldb"
-            }
-            require('mason-nvim-dap').default_setup(config) -- don't forget this!
-        end,
-    },
+   },
   })
   require("dapui").setup()
   local dap = require("dap")

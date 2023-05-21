@@ -8,7 +8,9 @@ return {
       transparent = true,
       highlights = {
         LspInlayHint = {fg = '$grey', fmt = 'italic'},
-        Comment = {fg = '$light_grey' },
+        ["Comment"] = {fg = '#55aa88' },
+        ["@Comment"] = {fg = '#55aa88' },
+        ["@lsp.type.comment"] = {fg = '#55aa88' },
       },
     }
     vim.cmd([[colorscheme onedark]])
