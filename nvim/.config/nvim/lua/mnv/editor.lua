@@ -27,6 +27,9 @@ vim.opt.ttimeoutlen= 200
 vim.opt.pastetoggle = '<F11>'
 vim.opt.termguicolors = true
 
+-- clipboard provider
+vim.opt.clipboard:append("unnamedplus")
+
 --
 -- Language specific config
 --
