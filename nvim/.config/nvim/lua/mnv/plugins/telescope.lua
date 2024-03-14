@@ -17,9 +17,7 @@ return {
         "notify"
       }
     },
-    cmd = {
-      "Telescope"
-    },
+    lazy = false,
     dependencies = {
       { "nvim-lua/plenary.nvim" },
     },

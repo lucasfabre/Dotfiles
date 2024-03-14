@@ -1,16 +1,18 @@
 return {
   {
-    "phaazon/hop.nvim", version = "v2",
+    "phaazon/hop.nvim",
+    version = "v2",
     cmd = {
       "HopChar1",
       "HopWord",
     },
     opts = {}
   },
-  { "windwp/nvim-autopairs", lazy = false, priority = 1000, opts = {} },
-  { "editorconfig/editorconfig-vim", lazy = false, priority = 1000, },
-  { "mattn/emmet-vim", lazy = false, priority = 1000, },
-  { "kylechui/nvim-surround", version = "*", lazy = false, priority = 1000, opts = {} },
+  { "windwp/nvim-autopairs",         lazy = false,  priority = 1000, opts = {} },
+  { "editorconfig/editorconfig-vim", lazy = false,  priority = 1000, },
+  { "mattn/emmet-vim",               lazy = false,  priority = 1000, },
+  { "kylechui/nvim-surround",        version = "*", lazy = false,    priority = 1000, opts = {} },
+  { "nmac427/guess-indent.nvim",     lazy = false,  priority = 2000, opts = {} },
   {
     "zbirenbaum/copilot.lua",
     lazy = false,
@@ -28,6 +30,18 @@ return {
         }
       })
     end,
+  },
+  {
+    "petertriho/nvim-scrollbar",
+    lazy = false,
+    priority = 2000,
+    opts = {},
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    lazy = false,
+    priority = 2000,
+    opts = {},
   },
   {
     "kyazdani42/nvim-tree.lua",
@@ -49,6 +63,11 @@ return {
         dotfiles = true,
       },
     },
+  },
+  {
+    'numToStr/Comment.nvim',
+    opts = {},
+    lazy = false,
   },
   {
     "folke/which-key.nvim",

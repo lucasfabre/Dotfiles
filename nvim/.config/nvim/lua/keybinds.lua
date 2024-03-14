@@ -1,6 +1,23 @@
 --
 -- Keybinds
 --
+local function harpoon_toggle_telescope(harpoon_files)
+    print("debug harpoon_toggle_telescope" .. vim.inspect(harpoon_files))
+    local telescope_conf = require("telescope.config").values
+    local file_paths = {}
+    for _, item in ipairs(harpoon_files.items) do
+        table.insert(file_paths, item.value)
+    end
+
+    require("telescope.pickers").new({}, {
+        prompt_title = "Harpoon",
+        finder = require("telescope.finders").new_table({
+            results = file_paths,
+        }),
+        previewer = telescope_conf.file_previewer({}),
+        sorter = telescope_conf.generic_sorter({}),
+    }):find()
+end
 
 return {
   leader = ' ',
@@ -13,12 +30,25 @@ return {
     map("n",        "<leader>T",  "<Esc>:Telescope lsp_workspace_symbols<Cr>", { silent = true }, "Find Type")
     map({"i", "n"}, "<C-p>",      "<Esc>:Telescope find_files<Cr>",            { silent = true }, "Find File")
     map({"i", "n"}, "<C-e>",      "<Esc>:Telescope buffers<Cr>",               { silent = true }, "Find Buffer")
+    map({"i", "n"}, "<C-h>",      "<Esc>:Telescope keymaps<Cr>",               { silent = true }, "Search Keymaps")
     map("n",        "<leader>fg", ":Telescope grep_string<Cr>",                { silent = true }, "Grep in all files")
 
     -- Terminal
     map("t",          "<Esc>",  "<C-\\><C-n>",                     { silent = true }, "Exit terminal")
     map("t",          "<C-\\>", "<C-\\><C-n><Esc>:ToggleTerm<Cr>", { silent = true }, "Toggle Terminal")
     map({ "n", "i" }, "<C-\\>", "<Esc>:ToggleTerm<Cr>",            { silent = true }, "Toggle Terminal")
+
+    -- Harpoon
+    local harpoon = require("harpoon")
+    map("n",        "<leader>ha", function() harpoon:list():append() end, { silent = true }, "Add to Harpoon")
+    map("n",        "<leader>ht", function() harpoon_toggle_telescope(harpoon:list()) end, { silent = true }, "Harpoon Telescope")
+    map("n",        "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { silent = true }, "Toggle Harpoon menu")
+    -- Add harpoon hotkeys 1 to 0 to jump to the corresponding harpoon endtry
+    for i = 0, 9 do
+      -- handle 0 case
+      if i == 0 then i = 10 end
+      map("n",        "<leader>h" .. i, function() harpoon:list():select(i) end, { silent = true }, "Jump to harpoon " .. i)
+    end
 
     -- Others
     map("n",        "<leader>gg", ":LazyGitToggle<Cr>",       { silent = true }, "LazyGit")

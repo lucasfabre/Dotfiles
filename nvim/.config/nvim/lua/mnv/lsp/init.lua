@@ -61,6 +61,12 @@ local setup = function(opts)
       require("mnv/lsp/rust_analyzer").setup(lsp_setup_arg)
     end
   })
+  setup_lsp_for_filetype({
+    filetype = "c",
+    setup = function()
+      require("mnv/lsp/clangd").setup(lsp_setup_arg)
+    end
+  })
 end
 
 return {

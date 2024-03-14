@@ -1,11 +1,6 @@
 --  Show whitespaces
 vim.opt.listchars = 'tab:>·,trail:~,extends:>,precedes:<,space:·'
 vim.opt.list = true
---  Tabs is 4 spaces
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
 vim.opt.hidden = true
 vim.opt.wrap = false
 vim.opt.wildmenu = true
