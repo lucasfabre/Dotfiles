@@ -26,7 +26,6 @@ return {
     opts={},
     lazy = false,
     config = function(lsp_lines, config)
-      print("lsp_lines")
       require("lsp_lines").setup()
       vim.diagnostic.config({
         update_in_insert = false,
@@ -35,6 +34,15 @@ return {
         virtual_text = false, -- Since we're using lsp_lines
         virtual_lines = { only_current_line = true },
       })
+    end
+  },
+  {
+    'nvim-lualine/lualine.nvim',
+    priority = 2000,
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    lazy = false,
+    config = function()
+      require('lualine').setup()
     end
   }
 }

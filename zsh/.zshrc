@@ -20,6 +20,11 @@ if command -v 'zoxide' &> /dev/null; then
     eval "$(zoxide init zsh)"
 fi
 
+# Load nix profile env if available
+if [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+    source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
+
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
 
