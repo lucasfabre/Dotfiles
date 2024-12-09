@@ -5,6 +5,35 @@ export PATH=$HOME/.cargo/bin:$PATH
 # custom path compatibility
 export PATH=$HOME/.local/bin:/opt/bin:$PATH
 
+if [ -f "$HOME/.config/secretenv" ]; then
+    source $HOME/.config/secretenv
+fi
+if [ -f "/etc/profile.d/nix.sh" ]; then
+    source /etc/profile.d/nix.sh
+fi
+if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    . $HOME/.nix-profile/etc/profile.d/nix.sh
+fi
+# Load nix profile env if available
+if [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+    source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
+
+if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+    if [ -d "$HOME/.oh-my-zsh/custom" ]; then
+        echo "Moving the old oh-my-zsh custom folder to tmp..."
+        mv $HOME/.oh-my-zsh/custom $HOME/.oh-my-zsh/custom.bak
+        rm -rf $HOME/.oh-my-zsh
+    fi
+    echo "Installing oh-my-zsh..."
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    if [ -d "$HOME/.oh-my-zsh/custom.bak" ]; then
+        echo "Restoring the old oh-my-zsh custom folder..."
+        mv $HOME/.oh-my-zsh/custom.bak $HOME/.oh-my-zsh/custom
+    fi
+    echo "Done!"
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="/home/lucas/.oh-my-zsh"
 
@@ -32,15 +61,6 @@ if command -v 'thefuck' &> /dev/null; then
     eval $(thefuck --alias)
 fi
 
-if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-    source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
-fi
-
-# Load nix profile env if available
-if [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-    source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-fi
-
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
 
@@ -54,7 +74,12 @@ plugins=(git docker sudo thefuck fzf zoxide vscode)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-export EDITOR=nvim
+if command -v 'hx' &> /dev/null; then
+    export EDITOR=hx
+elif command -v 'nvim' &> /dev/null; then
+    export EDITOR=nvim
+fi
+alias e='$EDITOR'
 
 # Add simple command utils
 # - fkill: kill all process matching a given name
@@ -82,3 +107,19 @@ fi
 
 # Simple aliases that I like
 alias open="xdg-open"
+
+# Load multiplexer
+if command -v 'zellij' &> /dev/null; then
+    export ZELLIJ_AUTO_EXIT="true"
+    export ZELLIJ_AUTO_ATTACH="true"
+
+    if command -v uptime &> /dev/null && command -v date &> /dev/null; then
+        HASH="$(date -d "$(uptime -s)" +%s)-$UID-$GID"
+    else
+        HASH="00000-$UID-$GID"
+    fi
+    if [ ! -f "/tmp/$HASH-zellij-auto-start.sh" ]; then
+        zellij setup --generate-auto-start zsh > /tmp/$HASH-zellij-auto-start.sh
+    fi
+    source /tmp/$HASH-zellij-auto-start.sh
+fi
