@@ -1,3 +1,5 @@
+
+
 --  Show whitespaces
 vim.opt.listchars = 'tab:>·,trail:~,extends:>,precedes:<,space:·'
 vim.opt.list = true

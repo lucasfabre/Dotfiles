@@ -1,7 +1,2 @@
-vim.g.mapleader = " "
-vim.g.maplocalleader = ","
-
-vim.defer_fn(function()
-	require("init-actual")
-end, 0)
-
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")

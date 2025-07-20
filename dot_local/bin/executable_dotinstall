@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function d_usage() {
+  echo "Usage: $0 <command> [options]"
+  echo "Commands:"
+  echo "  install <package>  Install a package"
+  echo "  uninstall <package>  Uninstall a package"
+  echo "  list                List installed packages"
+}
+
+source "${HOME}/.local/share/dotinstall/platform.sh"
+
+init # Run the plaform init function
+
+function d_list() {
+  PACKAGES=$(list_available)
+  # list_available give a list of the available packages for the platform
+  echo "Available packages:"
+  for PKG in $PACKAGES; do
+    echo "  - $PKG"
+  done
+}
+
+function d_install() {
+  install_packages "$@"
+  echo "All packages installed successfully."
+}
+
+function d_uninstall() {
+  uninstall_packages "$@"
+  echo "All packages uninstalled successfully."
+}
+
+function d_interactive() {
+  # check if fzf is installed
+  if ! command -v fzf >/dev/null 2>&1; then
+    install_packages fzf
+  fi
+
+  fzf_packages=$(list_available | fzf --multi --preview 'echo {}' --preview-window=up:30% --height=50% --border)
+
+  readarray -t pkgs <<<"$fzf_packages"
+  install_packages "${pkgs[@]}"
+}
+
+# Parse arguments
+if [[ $# -lt 1 ]]; then
+  command="interactive"
+else
+  command="$1"
+  shift
+fi
+
+if [[ "$command" == "--help" || "$command" == "-h" ]]; then
+  usage
+  exit 0
+fi
+case "$command" in
+install)
+  if [[ $# -lt 1 ]]; then
+    echo "Error: No package specified for install."
+    usage
+    exit 1
+  fi
+  package="$1"
+  d_install "$package"
+  ;;
+uninstall)
+  if [[ $# -lt 1 ]]; then
+    echo "Error: No package specified for uninstall."
+    usage
+    exit 1
+  fi
+  package="$1"
+  d_uninstall "$package"
+  ;;
+list)
+  d_list
+  ;;
+interactive)
+  d_interactive
+  ;;
+*)
+  echo "Error: Unknown command '$command'"
+  usage
+  exit 1
+  ;;
+esac
