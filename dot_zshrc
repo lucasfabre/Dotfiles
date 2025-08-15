@@ -37,6 +37,13 @@ if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
         mv $HOME/.oh-my-zsh/custom.bak $HOME/.oh-my-zsh/custom
     fi
     echo "Done!"
+
+    # Install zellij.zsh plugin
+    if [ -d "$HOME/.oh-my-zsh/custom" ]; then
+        echo "Installing zellij.zsh oh-my-zsh plugin..."
+        git clone https://codeberg.org/tranzystorekk/zellij.zsh.git "$ZSH/custom/plugins/zellij" || true
+        echo "zellij plugin installed"
+    fi
 fi
 
 # Path to your oh-my-zsh installation.
@@ -50,7 +57,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker sudo vscode)
+plugins=(git docker sudo vscode zellij)
 
 # Define zsh theme
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
@@ -128,19 +135,3 @@ fi
 
 # Simple aliases that I like
 alias open="xdg-open"
-
-# Load multiplexer
-if command -v 'zellij' &> /dev/null; then
-    export ZELLIJ_AUTO_EXIT="true"
-    export ZELLIJ_AUTO_ATTACH="true"
-
-    if command -v uptime &> /dev/null && command -v date &> /dev/null; then
-        HASH="$(date -d "$(uptime -s)" +%s)-$UID-$GID"
-    else
-        HASH="00000-$UID-$GID"
-    fi
-    if [ ! -f "/tmp/$HASH-zellij-auto-start.sh" ]; then
-        zellij setup --generate-auto-start zsh > /tmp/$HASH-zellij-auto-start.sh
-    fi
-    source /tmp/$HASH-zellij-auto-start.sh
-fi
