@@ -133,10 +133,6 @@ funcion fkill() {
 }
 
 # Add better aliasses if the comando exists
-# - bat: better cat
-if command -v 'bat' &> /dev/null; then
-    alias cat='bat'
-fi
 # - exa: A modern, replacement for ls
 if command -v 'exa' &> /dev/null; then
     alias ls='exa --icons --group-directories-first --git --color=always'
