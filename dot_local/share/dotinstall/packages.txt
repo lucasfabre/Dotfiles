@@ -1,0 +1,17 @@
+lazygit
+gum
+zoxide
+charmbracelet/tap/mods
+zellij
+oh-my-posh
+thefuck
+fzf
+bat
+eza
+dust
+chezmoi
+sst/tap/opencode
+tldr
+ripgrep
+neovim
+

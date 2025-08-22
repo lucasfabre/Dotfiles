@@ -1,90 +1,133 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
-set -euo pipefail
+# --- Argument Parsing for Debug Flag ---
+DEBUG=false
+if [[ "$1" == "-d" || "$1" == "--debug" ]]; then
+  DEBUG=true
+  echo "- DEBUG MODE ENABLED -"
+fi
 
-function d_usage() {
-  echo "Usage: $0 <command> [options]"
-  echo "Commands:"
-  echo "  install <package>  Install a package"
-  echo "  uninstall <package>  Uninstall a package"
-  echo "  list                List installed packages"
-}
+# --- Configuration ---
+PACKAGE_FILE="$HOME/.local/share/dotinstall/packages.txt"
 
-source "${HOME}/.local/share/dotinstall/platform.sh"
-
-init # Run the plaform init function
-
-function d_list() {
-  PACKAGES=$(list_available)
-  # list_available give a list of the available packages for the platform
-  echo "Available packages:"
-  for PKG in $PACKAGES; do
-    echo "  - $PKG"
-  done
-}
-
-function d_install() {
-  install_packages "$@"
-  echo "All packages installed successfully."
-}
-
-function d_uninstall() {
-  uninstall_packages "$@"
-  echo "All packages uninstalled successfully."
-}
-
-function d_interactive() {
-  # check if fzf is installed
-  if ! command -v fzf >/dev/null 2>&1; then
-    install_packages fzf
-  fi
-
-  fzf_packages=$(list_available | fzf --multi --preview 'echo {}' --preview-window=up:30% --height=50% --border)
-
-  readarray -t pkgs <<<"$fzf_packages"
-  install_packages "${pkgs[@]}"
-}
-
-# Parse arguments
-if [[ $# -lt 1 ]]; then
-  command="interactive"
-else
-  command="$1"
+# --- Helper Function ---
+# Checks if the first argument is present in the rest of the arguments (the array).
+contains_element() {
+  local e match="$1"
   shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+# --- Pre-flight Checks ---
+if [[ ! -f "$PACKAGE_FILE" ]]; then
+  echo "Error: Package file not found at $PACKAGE_FILE" >&2
+  exit 1
+fi
+if ! command -v brew &> /dev/null; then
+  echo "Error: Homebrew is not installed. Please install it first." >&2
+  exit 1
+fi
+if ! command -v gum &> /dev/null; then
+  echo "gum not found. Installing with Homebrew..."
+  brew install gum
 fi
 
-if [[ "$command" == "--help" || "$command" == "-h" ]]; then
-  usage
-  exit 0
+# --- Main Logic ---
+mapfile -t PACKAGES < <(grep -vE '^\s*#|^\s*$' "$PACKAGE_FILE")
+
+gum style --border normal --margin "1" --padding "1 2" "Homebrew Package Manager" "Select packages to install or uninstall."
+
+# --- Check for Already Installed Packages ---
+if ! $DEBUG; then
+  gum spin --spinner dot --title "Checking installed packages..." -- sleep 1
 fi
-case "$command" in
-install)
-  if [[ $# -lt 1 ]]; then
-    echo "Error: No package specified for install."
-    usage
-    exit 1
+
+initial_installed=()
+for pkg in "${PACKAGES[@]}"; do
+  pkg_name=$(basename "$pkg")
+  if brew list --formula | grep -q "^${pkg_name}$"; then
+    initial_installed+=("$pkg")
   fi
-  package="$1"
-  d_install "$package"
-  ;;
-uninstall)
-  if [[ $# -lt 1 ]]; then
-    echo "Error: No package specified for uninstall."
-    usage
-    exit 1
+done
+
+# --- Display Interactive Checklist ---
+selected_formatted=$(printf ",%s" "${initial_installed[@]}")
+selected_formatted=${selected_formatted:1}
+
+gum style "Use <space> to toggle, <enter> to confirm."
+
+desired_selection_str=$(gum choose \
+  --no-limit \
+  --height 10 \
+  --cursor-prefix "[ ] " \
+  --selected-prefix "[✓] " \
+  --unselected-prefix "[ ] " \
+  --selected="$selected_formatted" \
+  "${PACKAGES[@]}")
+
+if [[ -z "$desired_selection_str" ]]; then
+    echo "No packages selected. Exiting."
+    exit 0
+fi
+
+mapfile -t desired_installed < <(echo "$desired_selection_str")
+
+# --- Process Selections ---
+gum style --bold "Processing your selections..."
+
+for pkg in "${PACKAGES[@]}"; do
+  is_initially_installed=false
+  if contains_element "$pkg" "${initial_installed[@]}"; then
+    is_initially_installed=true
   fi
-  package="$1"
-  d_uninstall "$package"
-  ;;
-list)
-  d_list
-  ;;
-interactive)
-  d_interactive
-  ;;
-*)
-  echo "Error: Unknown command '$command'"
-  usage
-  exit 1
-  ;;
-esac
+  
+  is_desired=false
+  if contains_element "$pkg" "${desired_installed[@]}"; then
+    is_desired=true
+  fi
+
+  # --- Perform Install/Uninstall Action ---
+  if $is_desired && ! $is_initially_installed; then
+    # Install: It's desired now but wasn't installed before.
+    echo "Installing $pkg..."
+    if $DEBUG; then
+        # In debug mode, run brew directly to show all logs.
+        if brew install "$pkg"; then
+            echo "✅ Successfully installed $pkg"
+        else
+            echo "❌ Failed to install $pkg"
+        fi
+    else
+        # In normal mode, use gum spin for a clean UI.
+        if gum spin --spinner line --title "Installing $pkg..." -- brew install "$pkg"; then
+            echo "✅ Successfully installed $pkg"
+        else
+            echo "❌ Failed to install $pkg"
+        fi
+    fi
+  elif ! $is_desired && $is_initially_installed; then
+    # Uninstall: It's not desired now but was installed before.
+    echo "Uninstalling $pkg..."
+    if $DEBUG; then
+        # In debug mode, run brew directly to show all logs.
+        if brew uninstall "$pkg"; then
+            echo "🗑️ Successfully uninstalled $pkg"
+        else
+            echo "❌ Failed to uninstall $pkg"
+        fi
+    else
+        # In normal mode, use gum spin for a clean UI.
+        if gum spin --spinner line --title "Uninstalling $pkg..." -- brew uninstall "$pkg"; then
+            echo "🗑️ Successfully uninstalled $pkg"
+        else
+            echo "❌ Failed to uninstall $pkg"
+        fi
+    fi
+  fi # Note: The 'else' block for "No change needed" has been removed.
+done
+
+echo ""
+gum style --bold --foreground 212 "All done! ✨"

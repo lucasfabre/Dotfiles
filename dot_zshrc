@@ -5,6 +5,14 @@ export PATH=$HOME/.cargo/bin:$PATH
 # custom path compatibility
 export PATH=$HOME/.local/bin:/opt/bin:$PATH
 
+if [ ! -d "/home/linuxbrew/.linuxbrew" ]; then
+  echo -n "Homebrew is not installed. Do you want to install it now? [y/N] "
+  read reply
+  if [[ "$reply" =~ ^[Yy]$ ]]; then
+    env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+fi
+
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
