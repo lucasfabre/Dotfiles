@@ -11,7 +11,7 @@ eza
 dust
 chezmoi
 sst/tap/opencode
-tldr
+tlrc
 ripgrep
 neovim
 asdf

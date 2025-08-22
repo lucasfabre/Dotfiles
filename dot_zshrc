@@ -150,6 +150,10 @@ fi
 if command -v 'dust' &> /dev/null; then
     alias du='dust'
 fi
+# tlrc a tldr replacement
+if command -v 'tlrc' &> /dev/null; then
+    alias tldr='tlrc'
+fi
 
 # Simple aliases that I like
 alias open="xdg-open"
