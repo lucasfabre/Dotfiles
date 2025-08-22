@@ -110,6 +110,11 @@ if command -v 'fzf' &> /dev/null; then
     plugins+=('fzf')
 fi
 
+export ASDF_DATA_DIR="$HOME/.local/share/asdf"
+if [ -d "$ASDF_DATA_DIR" ]; then
+  export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+fi
+
 if [ -d "$HOME/.nvm" ]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
