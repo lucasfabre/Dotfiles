@@ -115,6 +115,10 @@ if [ -d "$ASDF_DATA_DIR" ]; then
   export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 fi
 
+if command -v 'mise' &> /dev/null; then
+  eval "$(mise activate zsh)"
+fi
+
 if [ -d "$HOME/.nvm" ]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

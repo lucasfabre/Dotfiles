@@ -15,4 +15,5 @@ tlrc
 ripgrep
 neovim
 asdf
+mise
 
