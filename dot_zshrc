@@ -5,7 +5,7 @@ export PATH=$HOME/.cargo/bin:$PATH
 # custom path compatibility
 export PATH=$HOME/.local/bin:/opt/bin:$PATH
 
-if [[ ! -d "/home/linuxbrew/.linuxbrew" && ! command -v 'brew' &> /dev/null ]]; then
+if [[ ! -d "/home/linuxbrew/.linuxbrew" ]] && ! command -v brew &> /dev/null; then
   echo -n "Homebrew is not installed. Do you want to install it now? [y/N] "
   read reply
   if [[ "$reply" =~ ^[Yy]$ ]]; then
@@ -160,6 +160,6 @@ if command -v 'tlrc' &> /dev/null; then
 fi
 
 # Simple aliases that I like
-alias open="xdg-open"
-
-
+if ! command -v 'open' &> /dev/null; then
+    alias open="xdg-open"
+fi

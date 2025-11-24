@@ -16,4 +16,4 @@ ripgrep
 neovim
 asdf
 mise
-
+bitwarden-cli
