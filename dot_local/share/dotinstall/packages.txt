@@ -10,7 +10,7 @@ bat
 eza
 dust
 chezmoi
-sst/tap/opencode
+opencode
 tlrc
 ripgrep
 neovim

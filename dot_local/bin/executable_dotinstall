@@ -36,7 +36,10 @@ if ! command -v gum &> /dev/null; then
 fi
 
 # --- Main Logic ---
-mapfile -t PACKAGES < <(grep -vE '^\s*#|^\s*$' "$PACKAGE_FILE")
+PACKAGES=()
+while IFS= read -r line; do
+    PACKAGES+=("$line")
+done < <(grep -vE '^\s*#|^\s*$' "$PACKAGE_FILE")
 
 gum style --border normal --margin "1" --padding "1 2" "Homebrew Package Manager" "Select packages to install or uninstall."
 
@@ -73,7 +76,10 @@ if [[ -z "$desired_selection_str" ]]; then
     exit 0
 fi
 
-mapfile -t desired_installed < <(echo "$desired_selection_str")
+desired_installed=()
+while IFS= read -r line; do
+    desired_installed+=("$line")
+done <<< "$desired_selection_str"
 
 # --- Process Selections ---
 gum style --bold "Processing your selections..."
