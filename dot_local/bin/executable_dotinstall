@@ -1,139 +1,24 @@
-#!/bin/bash
-# Exit immediately if a command exits with a non-zero status.
+#!/usr/bin/env bash
 set -e
+MAIN_EXECUTABLE="$HOME/.local/share/dotinstall/dotinstall"
 
-# --- Argument Parsing for Debug Flag ---
-DEBUG=false
-if [[ "$1" == "-d" || "$1" == "--debug" ]]; then
-  DEBUG=true
-  echo "- DEBUG MODE ENABLED -"
-fi
-
-# --- Configuration ---
-PACKAGE_FILE="$HOME/.local/share/dotinstall/packages.txt"
-
-# --- Helper Function ---
-# Checks if the first argument is present in the rest of the arguments (the array).
-contains_element() {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
-
-# --- Pre-flight Checks ---
-if [[ ! -f "$PACKAGE_FILE" ]]; then
-  echo "Error: Package file not found at $PACKAGE_FILE" >&2
-  exit 1
-fi
 if ! command -v brew &> /dev/null; then
   echo "Error: Homebrew is not installed. Please install it first." >&2
   exit 1
 fi
-if ! command -v gum &> /dev/null; then
-  echo "gum not found. Installing with Homebrew..."
-  brew install gum
+if ! command -v mise &> /dev/null; then
+  echo "mise not found. Installing with Homebrew..."
+  brew install mise
 fi
 
-# --- Main Logic ---
-PACKAGES=()
-while IFS= read -r line; do
-    PACKAGES+=("$line")
-done < <(grep -vE '^\s*#|^\s*$' "$PACKAGE_FILE")
-
-gum style --border normal --margin "1" --padding "1 2" "Homebrew Package Manager" "Select packages to install or uninstall."
-
-# --- Check for Already Installed Packages ---
-if ! $DEBUG; then
-  gum spin --spinner dot --title "Checking installed packages..." -- sleep 1
-fi
-
-initial_installed=()
-for pkg in "${PACKAGES[@]}"; do
-  pkg_name=$(basename "$pkg")
-  if brew list --formula | grep -q "^${pkg_name}$"; then
-    initial_installed+=("$pkg")
-  fi
-done
-
-# --- Display Interactive Checklist ---
-selected_formatted=$(printf ",%s" "${initial_installed[@]}")
-selected_formatted=${selected_formatted:1}
-
-gum style "Use <space> to toggle, <enter> to confirm."
-
-desired_selection_str=$(gum choose \
-  --no-limit \
-  --height 10 \
-  --cursor-prefix "[ ] " \
-  --selected-prefix "[✓] " \
-  --unselected-prefix "[ ] " \
-  --selected="$selected_formatted" \
-  "${PACKAGES[@]}")
-
-if [[ -z "$desired_selection_str" ]]; then
-    echo "No packages selected. Exiting."
+if [ "$1" = "--update" ] || [ ! -f "$MAIN_EXECUTABLE" ]; then
+  echo "Downloading dotinstall..."
+  curl -L -o "$MAIN_EXECUTABLE" https://api-minio.zh.vanill.eu/p-lucas-dotinstall-bdacf8c8/latest/dotinstall_generic.js
+  chmod +x "$MAIN_EXECUTABLE"
+  if [ "$1" = "--update" ]; then
+    echo "dotinstall has been updated successfully."
     exit 0
+  fi
 fi
 
-desired_installed=()
-while IFS= read -r line; do
-    desired_installed+=("$line")
-done <<< "$desired_selection_str"
-
-# --- Process Selections ---
-gum style --bold "Processing your selections..."
-
-for pkg in "${PACKAGES[@]}"; do
-  is_initially_installed=false
-  if contains_element "$pkg" "${initial_installed[@]}"; then
-    is_initially_installed=true
-  fi
-  
-  is_desired=false
-  if contains_element "$pkg" "${desired_installed[@]}"; then
-    is_desired=true
-  fi
-
-  # --- Perform Install/Uninstall Action ---
-  if $is_desired && ! $is_initially_installed; then
-    # Install: It's desired now but wasn't installed before.
-    echo "Installing $pkg..."
-    if $DEBUG; then
-        # In debug mode, run brew directly to show all logs.
-        if brew install "$pkg"; then
-            echo "✅ Successfully installed $pkg"
-        else
-            echo "❌ Failed to install $pkg"
-        fi
-    else
-        # In normal mode, use gum spin for a clean UI.
-        if gum spin --spinner line --title "Installing $pkg..." -- brew install "$pkg"; then
-            echo "✅ Successfully installed $pkg"
-        else
-            echo "❌ Failed to install $pkg"
-        fi
-    fi
-  elif ! $is_desired && $is_initially_installed; then
-    # Uninstall: It's not desired now but was installed before.
-    echo "Uninstalling $pkg..."
-    if $DEBUG; then
-        # In debug mode, run brew directly to show all logs.
-        if brew uninstall "$pkg"; then
-            echo "🗑️ Successfully uninstalled $pkg"
-        else
-            echo "❌ Failed to uninstall $pkg"
-        fi
-    else
-        # In normal mode, use gum spin for a clean UI.
-        if gum spin --spinner line --title "Uninstalling $pkg..." -- brew uninstall "$pkg"; then
-            echo "🗑️ Successfully uninstalled $pkg"
-        else
-            echo "❌ Failed to uninstall $pkg"
-        fi
-    fi
-  fi # Note: The 'else' block for "No change needed" has been removed.
-done
-
-echo ""
-gum style --bold --foreground 212 "All done! ✨"
+${MAIN_EXECUTABLE} $@

@@ -21,8 +21,8 @@ if [[ "$TERM" == "xterm-ghostty" ]]; then
   export TERM=xterm-256color
 fi
 
-if [ -f "$HOME/.config/secretenv" ]; then
-    source $HOME/.config/secretenv
+if [ -f "$HOME/.config/dotfiles/secrets.env" ]; then
+    source $HOME/.config/dotfiles/secrets.env
 fi
 if [ -f "/etc/profile.d/nix.sh" ]; then
     source /etc/profile.d/nix.sh
