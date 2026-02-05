@@ -1,0 +1,66 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "zai-coding-plan/glm-4.7",
+  "small_model": "zai-coding-plan/glm-4.5-air",
+  "provider": {
+    "zai-coding-plan": {
+      "options": {
+        "apiKey": "{{ (bitwarden "item" "z.ai apikey").login.password }}"
+      },
+    },
+    "openrouter": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "{{ (bitwarden "item" "openrouter.ai apikey").login.password }}"
+      },
+      "models": {
+        "qwen/qwen3-coder-next": {
+          "name": "Qwen 3 Coder (Next)"
+        },
+        "mistralai/devstral-2512": {
+          "name": "Mistral Devstral 2512"
+        },
+        "x-ai/grok-code-fast-1": {
+          "name": "Grok Code Fast"
+        },
+        "moonshotai/kimi-k2.5": {
+          "name": "Moonshot Kimi k2.5"
+        },
+        "openai/gpt-oss-120b": {
+          "name": "GPT OSS 120b"
+        },
+        "openrouter/auto": {
+          "name": "OpenRouter Auto"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "zai-mcp-server": {
+      "type": "local",
+      "command": ["npx", "-y", "@z_ai/mcp-server"],
+      "environment": {
+        "Z_AI_API_KEY": "{{ (bitwarden "item" "z.ai apikey").login.password }}",
+        "Z_AI_MODE": "ZAI"
+      }
+    },
+    "web-search-prime": {
+      "type": "remote",
+      "url": "https://api.z.ai/api/mcp/web_search_prime/mcp",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {{ (bitwarden "item" "z.ai apikey").login.password }}"
+      }
+    },
+    "web-reader": {
+      "type": "remote",
+      "url": "https://api.z.ai/api/mcp/web_reader/mcp",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {{ (bitwarden "item" "z.ai apikey").login.password }}"
+      }
+    }
+  }
+}
